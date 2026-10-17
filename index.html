@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>紙からはじめるAIエージェント｜ハンズオン手順</title>
+<meta name="description" content="アンケートと議事録を「何度も使える資料」に変える120分。2026年11月28日 熊本 XOSS POINT. のハンズオン手順ページです。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=BIZ+UDGothic&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+/* Layout: 1カラムの手順書。上部に固定の目次バー、ステップごとにカード、コピー可能なプロンプト */
+:root {
+  --bg: #f4f7fb;
+  --surface: #ffffff;
+  --ink: #1d2733;
+  --muted: #5a6878;
+  --line: #d6dee8;
+  --accent: #2c6aa8;
+  --accent-ink: #ffffff;
+  --accent-soft: #e3edf8;
+  --warn-bg: #fff4d6;
+  --warn-line: #e0a521;
+  --warn-ink: #6b4a00;
+  --ok: #2d8a57;
+  --ok-soft: #e2f3e9;
+  --code-bg: #eef2f7;
+  --code-ink: #1d2733;
+  --font-display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "BIZ UDPGothic", sans-serif;
+  --font-body: "BIZ UDPGothic", "Hiragino Sans", "Meiryo", sans-serif;
+  --font-code: "BIZ UDGothic", "Consolas", "Menlo", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f151c; --surface: #17202a; --ink: #e5ecf4; --muted: #9babbb; --line: #2a3644;
+    --accent: #7db0e6; --accent-ink: #0f151c; --accent-soft: #1c2b3c;
+    --warn-bg: #33291a; --warn-line: #c99222; --warn-ink: #f2d28c;
+    --ok: #6cc596; --ok-soft: #173326; --code-bg: #1f2a36; --code-ink: #e5ecf4;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f151c; --surface: #17202a; --ink: #e5ecf4; --muted: #9babbb; --line: #2a3644;
+  --accent: #7db0e6; --accent-ink: #0f151c; --accent-soft: #1c2b3c;
+  --warn-bg: #33291a; --warn-line: #c99222; --warn-ink: #f2d28c;
+  --ok: #6cc596; --ok-soft: #173326; --code-bg: #1f2a36; --code-ink: #e5ecf4;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.85;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap {
+  max-width: 880px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.4; text-wrap: balance; margin: 0; }
+a { color: var(--accent); }
+code { font-family: var(--font-code); font-size: .92em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+
+/* hero */
+.hero { background: var(--surface); border-bottom: 1px solid var(--line); }
+.hero .wrap { padding-block: 40px 28px; display: grid; gap: 14px; }
+.eyebrow { font-size: 13px; color: var(--muted); letter-spacing: .06em; }
+.hero h1 { font-size: clamp(28px, 6vw, 40px); }
+.hero .sub { font-family: var(--font-display); font-size: clamp(17px, 3.4vw, 21px); font-weight: 700; color: var(--accent); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; color: var(--muted); }
+.meta b { color: var(--ink); font-weight: 700; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+  border-radius: 999px; padding: 10px 18px; font-weight: 700; font-size: 15px;
+  border: 2px solid var(--accent); color: var(--accent); background: transparent; cursor: pointer;
+  font-family: var(--font-body);
+}
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible { outline: 3px solid var(--warn-line); outline-offset: 2px; }
+
+/* nav */
+nav.toc {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--surface); border-bottom: 1px solid var(--line);
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--surface); }
+nav.toc .wrap { display: flex; align-items: center; gap: 12px; padding-block: 8px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; overflow-x: auto; flex: 1; min-width: 0; scrollbar-width: thin; }
+nav.toc a {
+  display: inline-block; white-space: nowrap; text-decoration: none; font-size: 14px;
+  padding: 4px 12px; border-radius: 999px; color: var(--ink); border: 1px solid var(--line); background: var(--bg);
+}
+nav.toc a.done { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+.progress { font-size: 13px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+main .wrap { padding-block: 24px 64px; display: grid; gap: 28px; }
+section.block { display: grid; gap: 14px; }
+section.block > h2 { font-size: clamp(22px, 4.6vw, 28px); padding-bottom: 6px; border-bottom: 3px solid var(--accent); }
+.part-label { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--accent); letter-spacing: .08em; }
+p { margin: 0; }
+ul, ol.plain { margin: 0; padding-left: 1.4em; display: grid; gap: 4px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.step-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.badge {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink); font-family: var(--font-display); font-weight: 700; font-size: 20px;
+}
+.step-head h3 { font-size: 21px; flex: 1; min-width: 12em; }
+.time { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.donebox { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; cursor: pointer; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); }
+.donebox input { width: 18px; height: 18px; accent-color: var(--ok); }
+.card.is-done { border-color: var(--ok); }
+.card.is-done .donebox { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+
+/* prompt / code */
+.prompt { border-radius: 10px; background: var(--code-bg); border: 1px solid var(--line); overflow: hidden; min-width: 0; }
+.prompt-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 8px 6px 14px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); font-weight: 700; }
+.prompt pre { margin: 0; padding: 14px; font-family: var(--font-code); font-size: 14.5px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; color: var(--code-ink); }
+.copy {
+  font-family: var(--font-body); font-size: 14px; font-weight: 700; cursor: pointer;
+  background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; padding: 6px 14px; min-width: 104px;
+}
+.copy.copied { background: var(--ok); }
+.where { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); margin-right: 6px; }
+
+.note, .warn { border-radius: 10px; padding: 14px 16px; display: grid; gap: 6px; }
+.note { background: var(--accent-soft); }
+.warn { background: var(--warn-bg); border-left: 5px solid var(--warn-line); color: var(--ink); }
+.note h4, .warn h4 { margin: 0; font-size: 15px; font-family: var(--font-display); }
+.warn h4 { color: var(--warn-ink); }
+
+.table-wrap { overflow-x: auto; min-width: 0; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 700; white-space: nowrap; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--muted); }
+tr.host td { color: var(--muted); }
+
+.checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.checklist label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.checklist input { margin-top: 6px; width: 18px; height: 18px; accent-color: var(--ok); flex: none; }
+
+details { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+details > summary { cursor: pointer; padding: 10px 14px; font-weight: 700; font-size: 15px; }
+details[open] > summary { border-bottom: 1px solid var(--line); }
+details .inner { padding: 12px; display: grid; gap: 10px; }
+
+figure { margin: 0; display: grid; gap: 6px; }
+figure img { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+figcaption { font-size: 13px; color: var(--muted); text-align: center; }
+.manga { max-width: 560px; justify-self: center; width: 100%; }
+
+.signs { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.signs li { display: grid; grid-template-columns: 7.5em 1fr; gap: 10px; background: var(--bg); border-radius: 8px; padding: 8px 12px; }
+.signs b { color: var(--accent); }
+@media (max-width: 520px) { .signs li { grid-template-columns: 1fr; gap: 0; } }
+
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  background: var(--ink); color: var(--bg); padding: 8px 16px; border-radius: 999px; font-size: 14px; font-weight: 700;
+  opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40;
+}
+.toast.show { opacity: 1; }
+footer { border-top: 1px solid var(--line); background: var(--surface); }
+footer .wrap { padding-block: 20px; font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">AIセミナー シリーズ第2回｜ハンズオン手順ページ</div>
+    <h1>紙からはじめるAIエージェント</h1>
+    <div class="sub">アンケートと議事録を「何度も使える資料」に変える120分</div>
+    <div class="meta">
+      <span><b>日時</b>　2026年11月28日（土）14:00〜16:00</span>
+      <span><b>会場</b>　熊本 XOSS POINT.（くまもと森都心プラザ2階）</span>
+      <span><b>講師</b>　天汐香弓</span>
+    </div>
+    <div class="actions">
+      <a class="btn primary" href="https://github.com/teshiokayumi/Minutes/archive/refs/heads/main.zip">教材をダウンロード（ZIP）</a>
+      <a class="btn" href="https://github.com/teshiokayumi/Minutes">GitHubで中身を見る</a>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="目次">
+  <div class="wrap">
+    <ol>
+      <li><a href="#prep" data-step="prep">事前準備</a></li>
+      <li><a href="#paper" data-step="paper">前半：紙</a></li>
+      <li><a href="#download" data-step="download">ダウンロード</a></li>
+      <li><a href="#stepA" data-step="stepA">A 範囲</a></li>
+      <li><a href="#stepB" data-step="stepB">B 手順書</a></li>
+      <li><a href="#stepC" data-step="stepC">C 動かす</a></li>
+      <li><a href="#stepD" data-step="stepD">D 使い回す</a></li>
+      <li><a href="#extra" data-step="extra">発展</a></li>
+      <li><a href="#help">こまったとき</a></li>
+    </ol>
+    <span class="progress" id="progress">0 / 8</span>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+<section class="block" id="about">
+  <h2>今日やること</h2>
+  <p>前半30分は<b>パソコンを開かずに、紙とペンで「何を作るか」</b>を決めます。後半は、研修のアンケートと議事録を Claude Code に読ませて、<b>次の仕事でそのまま使えるまとめ（コンテキスト資料）</b>を作るコマンド <code>/context</code> を作ります。</p>
+  <p>このページのプロンプトは、右上の「コピー」ボタンでそのまま Claude Code に貼り付けられます。先に進める方は、どんどん進めてください。各ステップの「できた」にチェックを入れると、上の目次に印がつきます。</p>
+  <div class="warn">
+    <h4>資料の中身はどこへ行く？</h4>
+    <p>作った道具とまとめは自分のパソコンに残り、<b>Web には公開しません</b>。ただし、AI が資料を読むときは、<b>中身が AI のサービス（Anthropic 社）へ送られて処理されます</b>。社外秘のものは入れないでください。</p>
+  </div>
+</section>
+
+<section class="block" id="timeline">
+  <h2>タイムライン</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>時間</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr class="host"><td class="num">14:00</td><td>ごあいさつ・講師紹介（CDLE熊本）</td></tr>
+        <tr><td class="num">14:05</td><td>【前半・紙】使えるツールを作るには（漫画に沿って）</td></tr>
+        <tr><td class="num">14:35</td><td>休憩</td></tr>
+        <tr><td class="num">14:40</td><td>今日の題材とデモ</td></tr>
+        <tr><td class="num">14:48</td><td>教材をダウンロードして Claude Code を起動</td></tr>
+        <tr><td class="num">14:53</td><td>ステップA　任せる範囲を決める</td></tr>
+        <tr><td class="num">15:00</td><td>ステップB　紙の要件を手順書に写す</td></tr>
+        <tr><td class="num">15:15</td><td>ステップC　動かして、確認して、保存する</td></tr>
+        <tr><td class="num">15:25</td><td>ステップD　使い回す／育てる</td></tr>
+        <tr><td class="num">15:33</td><td>発展：自分の課題のコマンドを作る</td></tr>
+        <tr><td class="num">15:43</td><td>持ち帰り方と、公開しない約束／発表</td></tr>
+        <tr><td class="num">15:50</td><td>まとめ</td></tr>
+        <tr class="host"><td class="num">15:55</td><td>まとめ・次回のご案内（CDLE熊本）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="coach">
+  <h2>講師紹介</h2>
+  <figure>
+    <img src="images/profile.jpg" width="960" height="540" alt="講師 天汐香弓（てしおかゆみ）のプロフィール。AIコンテンツクリエイター、企業委託ブロガー、個人開発者。">
+  </figure>
+</section>
+
+<section class="block" id="prep">
+  <div class="card" data-card="prep">
+    <div class="step-head">
+      <span class="badge">0</span>
+      <h3>参加前の準備（当日までに）</h3>
+      <label class="donebox"><input type="checkbox" id="done-prep" data-done="prep">できた</label>
+    </div>
+    <p>当日は、インストールやご契約の時間はとっていません。次の4つを済ませてからご参加ください。</p>
+    <ul class="checklist">
+      <li><label><input type="checkbox" id="prep-1" data-sub="prep"><span><b>Claude Pro 以上を契約する</b>（無料プランでは Claude Code を使えません）</span></label></li>
+      <li><label><input type="checkbox" id="prep-2" data-sub="prep"><span><b>ターミナル版かデスクトップアプリ版の、どちらか1つを準備する</b>（ターミナルに慣れていない方はデスクトップアプリ版がおすすめ。アプリに Claude Code が含まれています）</span></label></li>
+      <li><label><input type="checkbox" id="prep-3" data-sub="prep"><span><b>ログインして動作確認をする</b>（「こんにちは」と送って返事が返ってくればOK）</span></label></li>
+      <li><label><input type="checkbox" id="prep-4" data-sub="prep"><span><b>最新版に更新しておく</b>（当日は Pro の標準モデルの Opus 5.5 を使います）</span></label></li>
+    </ul>
+    <details>
+      <summary>動作確認のしかた</summary>
+      <div class="inner">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th></th><th>ターミナル版</th><th>デスクトップアプリ版</th></tr></thead>
+            <tbody>
+              <tr><td class="num">1</td><td><code>claude --version</code> と入力し、バージョンが出る</td><td>アプリを開き、上の「Code」タブを開く</td></tr>
+              <tr><td class="num">2</td><td><code>claude</code> と入力し、ブラウザでログインする</td><td>「Select folder」でフォルダを1つ選ぶ</td></tr>
+              <tr><td class="num">3</td><td><code>/model</code> で Opus 5.5 を確認（Esc で閉じる）</td><td>送信ボタン横のモデルが Opus 5.5 か確認</td></tr>
+              <tr><td class="num">4</td><td>「こんにちは」と送って返事が来ればOK</td><td>「こんにちは」と送って返事が来ればOK</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Pro プランは、チャットと Claude Code で使用量の上限を共有しています。当日はチャットでの大量のご利用を控えてください。</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="block" id="paper">
+  <div class="part-label">前半　14:05〜14:35</div>
+  <h2>使えるツールを作るには（紙とペン）</h2>
+  <div class="card" data-card="paper">
+    <div class="step-head">
+      <span class="badge">紙</span>
+      <h3>パソコンは閉じたままで大丈夫です</h3>
+      <label class="donebox"><input type="checkbox" id="done-paper" data-done="paper">できた</label>
+    </div>
+    <p>漫画を1枚ずつ見ながら、同じことを手元のワークシートに書いていきます（ワークシートと筆記用具は会場でお配りします）。</p>
+    <figure class="manga">
+      <img src="images/manga.jpg" width="1060" height="1484" alt="漫画（全7コマ）。1：AIエージェントとは、目的を伝えると達成までの手順を自動で作業してやり切ること。2：ツールは何のために作るのか。3：困りごとを8個書き出し、ツールにできそうなものを1つ選ぶ。4：手順を上から下へ書き、実行者を隣に書く。5〜6：いつ・誰が・何のために・どのように・どんな方法で、の要件を作る。7：まずは紙とペンで要件を書き出せるようにする。" loading="lazy">
+      <figcaption>漫画は右上の1から、2 → 3/7 → 4/7 … の順に読みます</figcaption>
+    </figure>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>時間</th><th>ワークシート</th><th>書くこと</th></tr></thead>
+        <tbody>
+          <tr><td class="num">14:05</td><td>―</td><td>AIエージェントってなに？（目的を伝える → 手順を考える → 自動で作業 → やり切る）</td></tr>
+          <tr><td class="num">14:10</td><td>―</td><td>ツールは「何のために」作るのか</td></tr>
+          <tr><td class="num">14:15</td><td>①②</td><td>困りごとを8個書き出し、いちばんツールにできそうなもの1つに ○</td></tr>
+          <tr><td class="num">14:21</td><td>③</td><td>手順を上から下へ書き、隣に「実行者」を書く</td></tr>
+          <tr><td class="num">14:28</td><td>④⑤</td><td>要件（いつ・誰が・何のために・どのように・どんな方法で）、やってはいけないこと</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <h4>ここが今日いちばん大事です</h4>
+      <p>「実行者」が<b>システム</b>の行は、エージェントに任せるところ。<b>人</b>の行は、あとで「人が確認するところ」になります。後半は、この紙をそのまま手順書に写します。</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="latter">
+  <div class="part-label">後半　14:40〜15:50</div>
+  <h2>アンケートと議事録を「使えるまとめ」に変える</h2>
+  <p>まずは講師が完成形を動かします（14:40〜14:48）。<b>方針を3行で話す／資料にないことは【要確認】と書く／個人名・電話番号を消す／件数を自分でチェックする／「保存してよいですか？」と聞いて止まる</b>の5つに注目してください。</p>
+  <p>研修のあと、アンケートのCSVと走り書きの議事録が別々に置かれたまま。次の企画のたびに両方を読み直したり、AI に毎回生データを貼り付けたりしていませんか。そこで<b>1回だけきちんとまとめて、次からはそれを使う</b>ようにします。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>いままで</th><th>今日つくる形</th></tr></thead>
+      <tbody>
+        <tr><td><b>AIに渡すもの</b></td><td>生のアンケート＋議事録を毎回</td><td>整えたまとめ1枚</td></tr>
+        <tr><td><b>個人情報</b></td><td>毎回そのまま流れる</td><td>まとめる時点で取りのぞく</td></tr>
+        <tr><td><b>結果</b></td><td>聞くたびに違う答え</td><td>同じ土台なので、ぶれにくい</td></tr>
+        <tr><td><b>次の人</b></td><td>また最初から読む</td><td>まとめを読めば追いつける</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="download">
+  <div class="card" data-card="download">
+    <div class="step-head">
+      <span class="badge">1</span>
+      <h3>教材をダウンロードして Claude Code を起動</h3>
+      <span class="time">14:48〜14:53</span>
+      <label class="donebox"><input type="checkbox" id="done-download" data-done="download">できた</label>
+    </div>
+    <ol class="plain">
+      <li><a href="https://github.com/teshiokayumi/Minutes/archive/refs/heads/main.zip">教材のZIPをダウンロード</a>する（このページのいちばん上のボタンと同じです）</li>
+      <li><code>Minutes-main.zip</code> を展開する（デスクトップなど、わかる場所に）</li>
+      <li>展開してできた <code>Minutes-main</code> フォルダで Claude Code を起動する</li>
+    </ol>
+    <details open>
+      <summary>ターミナル版の起動</summary>
+      <div class="inner">
+        <p><b>Windows：</b>エクスプローラーで <code>Minutes-main</code> フォルダを開き、何もないところを右クリック →「ターミナルで開く」。<br><b>Mac：</b>ターミナルを開き、<code>cd </code>（cd と半角スペース）と入力してから <code>Minutes-main</code> フォルダをターミナルにドラッグし、Enter。<br>開いたら、次の1行を入力します。</p>
+        <div class="prompt"><div class="prompt-bar"><span><span class="where">ターミナル</span>入力</span><button class="copy" type="button">コピー</button></div><pre>claude</pre></div>
+      </div>
+    </details>
+    <details>
+      <summary>デスクトップアプリ版の起動</summary>
+      <div class="inner">
+        <p>Claude デスクトップアプリの「Code」タブを開き、「Select folder」で <code>Minutes-main</code> フォルダを選びます。ここから先のプロンプトは、ターミナル版と同じです。</p>
+      </div>
+    </details>
+    <p>起動できたら、まず中身を見てもらいましょう。</p>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け</span><button class="copy" type="button">コピー</button></div><pre>input フォルダのファイルを2つとも読んで、どんな資料か3行で教えてください。</pre></div>
+    <details>
+      <summary>フォルダの中身</summary>
+      <div class="inner">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ファイル</th><th>中身</th><th>使うところ</th></tr></thead>
+            <tbody>
+              <tr><td><code>input/anket-2026-09-13.csv</code></td><td>練習用のアンケート（架空）</td><td>全体</td></tr>
+              <tr><td><code>input/gijiroku-2026-09-20.txt</code></td><td>練習用の議事録メモ（架空）</td><td>全体</td></tr>
+              <tr><td><code>CLAUDE_追記ルール.md</code></td><td>CLAUDE.md に書くルール</td><td>A</td></tr>
+              <tr><td><code>gitignore_追記.txt</code></td><td>.gitignore に書く行</td><td>A</td></tr>
+              <tr><td><code>context.md</code></td><td>手順書（/context の中身）</td><td>B</td></tr>
+              <tr><td><code>context/_テンプレート.md</code></td><td>まとめの型</td><td>C</td></tr>
+              <tr><td><code>完成版/</code></td><td>うまくいかなかったときの完成形と出力例</td><td>困ったとき</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>アンケートには、わざと<b>個人名と電話番号</b>が1件だけ入っています。議事録には<b>決まったこと</b>と<b>まだ決まっていないこと</b>が混ざっています。エージェントが見分けられるかを、あとで確かめます。</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="block" id="stepA">
+  <div class="card" data-card="stepA">
+    <div class="step-head">
+      <span class="badge">A</span>
+      <h3>任せる範囲を決める</h3>
+      <span class="time">14:53〜15:00</span>
+      <label class="donebox"><input type="checkbox" id="done-stepA" data-done="stepA">できた</label>
+    </div>
+    <p>紙のワークで「人がやること」と「システムがやること」を分けました。その境界を、Claude Code が毎回読むルール（CLAUDE.md）にします。</p>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け（1つ目）</span><button class="copy" type="button">コピー</button></div><pre>CLAUDE_追記ルール.md の内容で、このフォルダに CLAUDE.md を作ってください。すでに CLAUDE.md がある場合は、最後に追記してください。</pre></div>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け（2つ目）</span><button class="copy" type="button">コピー</button></div><pre>gitignore_追記.txt の内容で、このフォルダに .gitignore を作ってください。すでにある場合は、最後に追記してください。</pre></div>
+    <p>ファイルを作ってよいか聞かれたら、内容を見て許可します。</p>
+    <details>
+      <summary>CLAUDE.md に入るルールを見る</summary>
+      <div class="inner"><div class="prompt"><div class="prompt-bar"><span>CLAUDE_追記ルール.md</span><button class="copy" type="button">コピー</button></div><pre>## このプロジェクトの目的（11月回）
+
+アンケートや議事録などの「生の資料」を、次の仕事でくり返し使える**コンテキスト資料**に変えて、手元にためていくためのプロジェクトです。
+
+## フォルダの役割
+
+- `input/` … もとの資料（アンケート・議事録）。**書き換えない**
+- `context/` … まとめたコンテキスト資料。ここだけが成果物
+- `.claude/commands/` … 手順書（スラッシュコマンド）
+
+## 境界ルール（やってはいけないこと）
+
+- `input/` の元ファイルを書き換えない
+- `/context` の実行中は、`input/` と `context/` 以外のファイルを書き換えない（ルールや手順書を変えるのは、人が頼んだときだけ）
+- メール送信・外部サービスへの投稿など、外に送る操作はしない
+- 資料にない数字・意見を推測で作らない。わからないことは「【要確認】」と書く
+- まとめには個人名・電話番号・メールアドレスを残さない（Aさん・Bさんに置きかえる）
+- 保存・確定の前には、必ず人間に確認する
+
+## 公開についての約束
+
+- このプロジェクトは **Web に公開しない**（Vercel などにデプロイしない）
+- `input/` と `context/` は本物の個人情報が入りうるため、Git の記録に含めない（`.gitignore` で除外する）
+- 共有するのは「手順書」と「テンプレート」だけ。中身は各自の手元に置く
+
+## 話し方
+
+- 受講者はプログラミング初心者。専門用語は最小限にして、日本語でわかりやすく説明する
+- コードを書く前に、実装方針を3行で説明する</pre></div></div>
+    </details>
+    <div class="warn">
+      <h4>なぜ .gitignore に入れるの？</h4>
+      <p><code>input/</code> と <code>context/</code> には、本物のアンケートや議事録を入れることになります。GitHub に上げると、公開リポジトリなら誰でも見られる状態になります。<code>.gitignore</code> に書いておけば、共有されるのは「手順書」と「テンプレート」だけ。前回やった「Vercel のプロジェクトを削除する手順」と同じ考え方で、<b>公開しない／公開してしまったら止める</b>をセットで覚えてください。</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="stepB">
+  <div class="card" data-card="stepB">
+    <div class="step-head">
+      <span class="badge">B</span>
+      <h3>紙の要件を手順書に写す</h3>
+      <span class="time">15:00〜15:15</span>
+      <label class="donebox"><input type="checkbox" id="done-stepB" data-done="stepB">できた</label>
+    </div>
+    <p><code>.claude/commands/</code> フォルダに置いたファイルは、<b>スラッシュコマンド</b>（<code>/ファイル名</code>）として呼び出せます。前半に紙へ書いた「手順」と「実行者」が、そのまま手順書の中身になります。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>紙に書いたもの</th><th>手順書のどこになるか</th></tr></thead>
+        <tbody>
+          <tr><td>手順を上から下へ</td><td>「## 手順」の 1・2・3…</td></tr>
+          <tr><td>実行者が「システム」の行</td><td>エージェントにやらせる指示</td></tr>
+          <tr><td>実行者が「人」の行</td><td>「7. 人に確認する」</td></tr>
+          <tr><td>要件の「どのように」</td><td>出力の形（テンプレート）</td></tr>
+          <tr><td>やってはいけないこと</td><td>「## やってはいけないこと」</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け</span><button class="copy" type="button">コピー</button></div><pre>context.md の内容を、そのまま .claude/commands/context.md としてコピーしてください。中身は変えないでください。</pre></div>
+    <details>
+      <summary>手順書（context.md）の中身を見る</summary>
+      <div class="inner"><div class="prompt"><div class="prompt-bar"><span>context.md</span><button class="copy" type="button">コピー</button></div><pre>---
+description: アンケートと議事録を読み、次に使えるコンテキスト資料にまとめて、人に確認してから保存する
+argument-hint: [まとめたい資料のパス（省略すると input フォルダの新しい2件）]
+---
+
+あなたは、研修やイベントのふりかえりを担当するアシスタントです。
+以下の手順を、上から順番に、1つずつ実行してください。
+
+## 手順
+
+### 1. 資料を読む（認識）
+- 読むファイル: $ARGUMENTS
+- 何も指定されていなければ、`input/` フォルダの中で新しい順に2件（アンケートと議事録）を読む。
+- 読んだファイル名を最初に1行で伝える。
+
+### 2. 方針を3行で伝える（考える余白）
+- いきなりまとめを書かない。
+- 「どんな資料か」「足りない情報は何か」「どうまとめるか」を3行で先に書く。
+
+### 3. 事実と意見を分ける（推論）
+- 数えられるもの（回答数・満足度・件数）は、実際に数える。推測で数字を作らない。
+- 自由記述は、似た意見をまとめて「何件あったか」を添える。
+- 議事録からは「決まったこと」と「まだ決まっていないこと」を分けて拾う。
+- 資料に書かれていないことは書かない。判断できないものは「【要確認】」と書く。
+
+### 4. 個人情報を取りのぞく（境界）
+- 個人名は「Aさん」「Bさん」に置きかえる。
+- 電話番号・メールアドレス・住所は残さず削除する。
+- 個人が特定できそうな書き方（一人しかいない所属＋役職など）は、ぼかして書く。
+
+### 5. テンプレートに流し込む（行動の準備）
+- `context/_テンプレート.md` の見出しをそのまま使ってまとめる。
+- 各項目は、あとで読む人がそれだけ読めばわかるように書く。
+
+### 6. 自分でチェックする（内省）
+下書きを、次のチェック項目で自己採点する。結果は ✅ / ⚠️ で一覧にする。
+
+- [ ] 件数の合計が、もとの回答数と合っているか
+- [ ] 個人名・電話番号・メールアドレスが残っていないか
+- [ ] 資料にない情報を推測で書いていないか
+- [ ] 「決まったこと」と「未決」が混ざっていないか
+- [ ] 次のアクションに「誰が・いつまでに」が入っているか
+- [ ] テンプレートの見出しがすべて埋まっているか（埋められない所は【要確認】）
+
+⚠️ があれば、直せるものは直す。直せないものは、人間への質問にする。
+
+### 7. 人に確認する（Human-in-the-Loop）
+- 完成した下書きとチェック結果を見せる。
+- 最後に必ず次のように聞いて、返事を待つ。
+  「この内容で保存してよいですか？ 直したいところがあれば教えてください。」
+- 人間が OK と言うまで、ファイルを保存しない。
+
+### 8. 保存する（行動）
+- OK が出たら `context/日付-タイトル.md`（例: `context/2026-09-13-研修ふりかえり.md`）に保存する。
+- 保存したファイル名を伝えて終了する。
+
+## やってはいけないこと
+- `input/` の元の資料を書き換えること
+- メール送信・チャット投稿など、外部に送ること
+- 資料にない数字や意見を作ること
+- 個人名・連絡先をまとめに残すこと
+- 人間の OK なしに保存すること</pre></div></div>
+    </details>
+    <div class="note">
+      <h4>確認しましょう</h4>
+      <p>入力欄に <code>/</code> と打つと、候補に <code>context</code> が出てきます。出てこないときは、<b>ターミナル版</b>は <code>/exit</code> で終了してもう一度 <code>claude</code>、<b>デスクトップ版</b>は新しいセッションを開き直してください。</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="stepC">
+  <div class="card" data-card="stepC">
+    <div class="step-head">
+      <span class="badge">C</span>
+      <h3>動かして、確認して、保存する</h3>
+      <span class="time">15:15〜15:25</span>
+      <label class="donebox"><input type="checkbox" id="done-stepC" data-done="stepC">できた</label>
+    </div>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>入力</span><button class="copy" type="button">コピー</button></div><pre>/context</pre></div>
+    <p>動き出したら、次の5つを画面で確かめましょう。</p>
+    <ul class="signs">
+      <li><b>① 方針</b><span>まとめを書く前に、方針が3行で出てくる</span></li>
+      <li><b>② 事実と意見</b><span>「満足度の平均」「同じ意見が何件」など、数えた結果が書かれている</span></li>
+      <li><b>③ 個人情報</b><span>アンケートにあった名前と電話番号が、まとめには残っていない</span></li>
+      <li><b>④ 【要確認】</b><span>「会場の空き確認」「個別相談の対応」が、未決や【要確認】に入っている</span></li>
+      <li><b>⑤ 確認</b><span>「保存してよいですか？」と聞いて、止まって待っている</span></li>
+    </ul>
+    <p>質問されたら、人として答えて OK を出します。</p>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け</span><button class="copy" type="button">コピー</button></div><pre>個別相談の対応は「次回の休憩時間に相談枠を作る」で確定です。会場の空き確認は未決のままで大丈夫です。
+この内容で保存してください。</pre></div>
+    <p>ファイル書き込みの許可を求められたら、内容を確認して許可します。<code>context</code> フォルダにまとめができていれば完成です。</p>
+    <div class="note">
+      <h4>答え合わせ</h4>
+      <p><code>完成版/出力例_2026-09-13-研修ふりかえり.md</code> と見比べてみましょう。言い回しが違っていても、<b>数字（12件・平均4.1・回収率60%）、決まったこと、未決</b>が合っていれば大丈夫です。</p>
+    </div>
+    <details>
+      <summary>まとめの型（context/_テンプレート.md）を見る</summary>
+      <div class="inner"><div class="prompt"><div class="prompt-bar"><span>_テンプレート.md</span><button class="copy" type="button">コピー</button></div><pre># （タイトル：いつ・何の記録か）
+
+## 1. 概要
+- 対象：
+- 日付：
+- もとにした資料：
+
+## 2. 数字でわかること
+-
+
+## 3. よかった点（多い順・件数つき）
+-
+
+## 4. 改善してほしい点（多い順・件数つき）
+-
+
+## 5. 決まったこと
+-
+
+## 6. 未決・【要確認】
+-
+
+## 7. 次のアクション（何を・誰が・いつまでに）
+-
+
+## 8. 引用元
+-</pre></div></div>
+    </details>
+  </div>
+</section>
+
+<section class="block" id="stepD">
+  <div class="card" data-card="stepD">
+    <div class="step-head">
+      <span class="badge">D</span>
+      <h3>使い回す／育てる</h3>
+      <span class="time">15:25〜15:33</span>
+      <label class="donebox"><input type="checkbox" id="done-stepD" data-done="stepD">できた</label>
+    </div>
+    <p>ここからが「再利用」です。できたまとめを渡して、次の仕事をしてもらいます。<b>生のアンケートはもう渡しません。</b></p>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け</span><button class="copy" type="button">コピー</button></div><pre>context フォルダのまとめをもとに、次回研修の案内文を書いてください。
+まとめに書かれていない情報は足さないでください。</pre></div>
+    <details>
+      <summary>ほかの使い方を試す</summary>
+      <div class="inner">
+        <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>企画書のたたき台</span><button class="copy" type="button">コピー</button></div><pre>context フォルダのまとめをもとに、次回研修の企画書のたたき台を作ってください。
+まとめに書かれていない情報は【要確認】としてください。</pre></div>
+        <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>上長への報告</span><button class="copy" type="button">コピー</button></div><pre>context フォルダのまとめをもとに、前回からの改善点を上長への報告用に3行でまとめてください。</pre></div>
+        <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>次のアンケートの見直し</span><button class="copy" type="button">コピー</button></div><pre>context フォルダのまとめをもとに、次回のアンケートの設問を見直す案を出してください。</pre></div>
+      </div>
+    </details>
+    <h3 style="font-size:18px">チェック項目を1つ足して育てる</h3>
+    <p>使ってみて「ここも見てほしい」と思ったことを、手順書に1行足します。これがエージェントを<b>育てる</b>ということです。</p>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け</span><button class="copy" type="button">コピー</button></div><pre>.claude/commands/context.md の「6. 自分でチェックする」に、次のチェック項目を追加してください。
+- [ ] 回収率（回答数 ÷ 配布数）が書かれているか</pre></div>
+    <p>もう一度 <code>/context</code> を動かして、チェック結果が増えていることを確かめましょう。</p>
+  </div>
+</section>
+
+<section class="block" id="extra">
+  <div class="card" data-card="extra">
+    <div class="step-head">
+      <span class="badge">＋</span>
+      <h3>発展：自分の課題のコマンドを作る</h3>
+      <span class="time">15:33〜15:43</span>
+      <label class="donebox"><input type="checkbox" id="done-extra" data-done="extra">できた</label>
+    </div>
+    <p>前半の紙のワークで ○ をつけた、自分の課題で作ってみましょう。遅れている方は、この時間でステップCまで進めれば大丈夫です。</p>
+    <p>ワークシートを見ながら、<b>（　）の中だけ</b>書きかえて送ります。</p>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>（　）を書きかえて貼り付け</span><button class="copy" type="button">コピー</button></div><pre>.claude/commands/context.md を参考にして、新しい手順書 .claude/commands/（コマンドの名前）.md を作ってください。
+
+・何をするコマンドか：（例：経費メモから勘定科目の候補を出す）
+・手順（紙に書いた順番）：（1. ○○を読む　2. ○○する　3. ○○する）
+・人に確認してほしいところ：（例：保存する前）
+・チェック項目：（例：金額の合計が合っているか）
+・やってはいけないこと：（例：元のファイルを書き換えない）
+
+いきなり完成させず、方針を3行で伝えるところと、保存の前に人に確認するところは必ず入れてください。</pre></div>
+    <p><b>アイデア例：</b>経費メモ → 勘定科目の候補／会議メモ → 議事録と ToDo 一覧／シフト未提出の人へのやさしいリマインド文</p>
+  </div>
+</section>
+
+<section class="block" id="takehome">
+  <h2>持ち帰り方と、公開しない約束</h2>
+  <ul>
+    <li>フォルダごと、いつも使う場所（ドキュメントなど）に移動します。</li>
+    <li>次に使うときは、そのフォルダで Claude Code を起動して <code>/context</code> と打つだけです。</li>
+    <li>自分の GitHub に置くと、チームでも同じコマンドが使えます。ただし <code>input/</code> と <code>context/</code> は <code>.gitignore</code> で外したままにしてください。</li>
+  </ul>
+  <div class="warn">
+    <h4>大事な話</h4>
+    <p><b>今日のツールは Web に公開しません。</b>9月に作った Web アプリを公開したままの方は、顧客名や社内情報が入っていないか確認し、入っていたら前回の手順でプロジェクトを削除してください。</p>
+    <p>本物の資料を扱うときは、「公開しない」「共有するのは手順書だけ」に加えて、<b>「社外秘のものは AI に入れない」</b>を守ってください。</p>
+  </div>
+  <div class="note">
+    <h4>今日の持ち帰り</h4>
+    <ol class="plain">
+      <li><b>紙に書ければ、作れる。</b>困りごと → 手順 → 実行者 → 要件。ここまで紙で書ければ、あとは AI に渡すだけ。</li>
+      <li><b>1回整えたものを、使い回す。</b>速くて、ぶれなくて、安全。</li>
+      <li><b>公開しない・人が確認する。</b>最後は人が OK を出す。</li>
+    </ol>
+  </div>
+</section>
+
+<section class="block" id="help">
+  <h2>こまったときは</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>こんなとき</th><th>こうする</th></tr></thead>
+      <tbody>
+        <tr><td>/context が候補に出ない</td><td>ターミナル版は <code>/exit</code> → <code>claude</code> で起動し直す。デスクトップ版は新しいセッションを開く。<code>Minutes-main</code> フォルダで起動しているかも確認</td></tr>
+        <tr><td>確認せずに保存しようとした</td><td>許可を求められたら「いいえ」。止めたいときは <code>Esc</code> キー。そのあと「手順書の7番を必ず守って」と伝える</td></tr>
+        <tr><td>数字が合わない・資料にないことが入っている</td><td>「件数をもう一度数え直してください」「資料にないことは入れないでください」と伝える</td></tr>
+        <tr><td>エラーが出た</td><td>エラーの全文を貼り付けて「原因を1つに絞って修正してください」と頼む</td></tr>
+        <tr><td>途中のステップで遅れた</td><td><code>完成版/</code> フォルダの中身をそれぞれの場所にコピーして追いつく（下のプロンプト）</td></tr>
+        <tr><td>デスクトップ版でスラッシュコマンドが使えない</td><td><code>context.md</code> の中身を貼り付けて「この手順で input フォルダの資料をまとめてください」と頼む</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>遅れたときの追いつき</span><button class="copy" type="button">コピー</button></div><pre>完成版/README.md を読んで、そこに書かれているとおりに、完成版のファイルをそれぞれの場所にコピーしてください。出力例はコピーしなくて大丈夫です。</pre></div>
+</section>
+
+<section class="block" id="cheat">
+  <h2>チートシート</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>やりたいこと</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>Claude Code を起動</td><td>フォルダでターミナルを開いて <code>claude</code></td></tr>
+        <tr><td>まとめを作る</td><td><code>/context</code></td></tr>
+        <tr><td>資料を指定して作る</td><td><code>/context input/ファイル名</code></td></tr>
+        <tr><td>途中で止める</td><td><code>Esc</code> キー</td></tr>
+        <tr><td>終了する</td><td><code>/exit</code></td></tr>
+        <tr><td>まとめを使う</td><td>「context フォルダのまとめをもとに、〇〇を書いてください」</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>AIセミナー シリーズ第2回「紙からはじめるAIエージェント」　講師：天汐香弓</span>
+    <span>練習用データはすべて架空です。教材リポジトリ：<a href="https://github.com/teshiokayumi/Minutes">github.com/teshiokayumi/Minutes</a></span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var KEY = 'minutes-handson-2026-11';
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  var toast = document.getElementById('toast');
+  var tId;
+  function showToast(msg) {
+    toast.textContent = msg; toast.classList.add('show');
+    clearTimeout(tId); tId = setTimeout(function () { toast.classList.remove('show'); }, 1600);
+  }
+
+  // copy buttons
+  document.querySelectorAll('.prompt').forEach(function (box) {
+    var btn = box.querySelector('.copy'); var pre = box.querySelector('pre');
+    if (!btn || !pre) return;
+    btn.addEventListener('click', function () {
+      var text = pre.innerText.replace(/\n$/, '');
+      function ok() {
+        btn.textContent = 'コピーしました'; btn.classList.add('copied'); showToast('コピーしました。Claude Code に貼り付けてください');
+        setTimeout(function () { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 1800);
+      }
+      function fallback() {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        var done = false;
+        try { done = document.execCommand('copy'); } catch (e) {}
+        if (done) { ok(); } else { showToast('選択しました。Ctrl+C（Mac は ⌘+C）でコピーしてください'); }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok, fallback);
+      } else { fallback(); }
+    });
+  });
+
+  // checkboxes
+  var steps = ['prep', 'paper', 'download', 'stepA', 'stepB', 'stepC', 'stepD', 'extra'];
+  function refresh() {
+    var n = 0;
+    steps.forEach(function (s) {
+      var on = !!state['done-' + s];
+      if (on) n++;
+      var card = document.querySelector('[data-card="' + s + '"]');
+      if (card) card.classList.toggle('is-done', on);
+      var link = document.querySelector('nav.toc a[data-step="' + s + '"]');
+      if (link) link.classList.toggle('done', on);
+    });
+    document.getElementById('progress').textContent = n + ' / ' + steps.length + ' できた';
+  }
+  document.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+    cb.checked = !!state[cb.id];
+    cb.addEventListener('change', function () { state[cb.id] = cb.checked; save(); refresh(); });
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>
