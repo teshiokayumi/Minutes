@@ -4,7 +4,7 @@ AIセミナー シリーズ第2回「紙からはじめるAIエージェント�
 
 **当日の手順ページ：https://teshiokayumi.github.io/Minutes/** （コピーボタンつき。当日はこのページを見ながら進めます）
 
-研修のアンケートと議事録を Claude Code に読ませて、次の仕事でそのまま使える**まとめ（コンテキスト資料）**を作るコマンド `/context` を作ります。
+研修のアンケートと議事録を Claude Code に読ませて、次の仕事でそのまま使える**まとめ（コンテキスト資料）**を作るコマンド `/matome` を作ります。
 
 ## 事前に必要なもの
 
@@ -37,7 +37,7 @@ claude
 | `context/_テンプレート.md` | まとめの型 | ステップC |
 | `CLAUDE_追記ルール.md` | CLAUDE.md に書くルール | ステップA |
 | `gitignore_追記.txt` | `.gitignore` に書く行 | ステップA |
-| `context.md` | 手順書（`/context` コマンドの中身） | ステップB |
+| `matome.md` | 手順書（`/matome` コマンドの中身） | ステップB |
 | `完成版/` | うまくいかなかったときの完成形と、出力例 | 困ったとき |
 | `index.html`、`images/` | 当日の手順ページ（GitHub Pages で表示） | 全体 |
 
@@ -48,8 +48,8 @@ claude
 | ステップ | やること |
 | --- | --- |
 | A | 任せる範囲を決める（`CLAUDE.md` と `.gitignore` を作る） |
-| B | 紙の要件を手順書にする（`.claude/commands/context.md` を作る） |
-| C | `/context` を動かして、確認して、保存する |
+| B | 紙の要件を手順書にする（`.claude/commands/matome.md` を作る） |
+| C | `/matome` を動かして、確認して、保存する |
 | D | できたまとめを使い回す／チェック項目を育てる |
 
 くわしい手順は、手順ページ（https://teshiokayumi.github.io/Minutes/）を見てください。

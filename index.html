@@ -212,7 +212,7 @@ footer .wrap { padding-block: 20px; font-size: 13px; color: var(--muted); displa
 
 <section class="block" id="about">
   <h2>今日やること</h2>
-  <p>前半30分は<b>パソコンを開かずに、紙とペンで「何を作るか」</b>を決めます。後半は、研修のアンケートと議事録を Claude Code に読ませて、<b>次の仕事でそのまま使えるまとめ（コンテキスト資料）</b>を作るコマンド <code>/context</code> を作ります。</p>
+  <p>前半30分は<b>パソコンを開かずに、紙とペンで「何を作るか」</b>を決めます。後半は、研修のアンケートと議事録を Claude Code に読ませて、<b>次の仕事でそのまま使えるまとめ（コンテキスト資料）</b>を作るコマンド <code>/matome</code> を作ります。</p>
   <p>このページのプロンプトは、右上の「コピー」ボタンでそのまま Claude Code に貼り付けられます。先に進める方は、どんどん進めてください。各ステップの「できた」にチェックを入れると、上の目次に印がつきます。</p>
   <div class="warn">
     <h4>資料の中身はどこへ行く？</h4>
@@ -375,7 +375,7 @@ footer .wrap { padding-block: 20px; font-size: 13px; color: var(--muted); displa
               <tr><td><code>input/gijiroku-2026-09-20.txt</code></td><td>練習用の議事録メモ（架空）</td><td>全体</td></tr>
               <tr><td><code>CLAUDE_追記ルール.md</code></td><td>CLAUDE.md に書くルール</td><td>A</td></tr>
               <tr><td><code>gitignore_追記.txt</code></td><td>.gitignore に書く行</td><td>A</td></tr>
-              <tr><td><code>context.md</code></td><td>手順書（/context の中身）</td><td>B</td></tr>
+              <tr><td><code>matome.md</code></td><td>手順書（/matome の中身）</td><td>B</td></tr>
               <tr><td><code>context/_テンプレート.md</code></td><td>まとめの型</td><td>C</td></tr>
               <tr><td><code>完成版/</code></td><td>うまくいかなかったときの完成形と出力例</td><td>困ったとき</td></tr>
             </tbody>
@@ -414,7 +414,7 @@ footer .wrap { padding-block: 20px; font-size: 13px; color: var(--muted); displa
 ## 境界ルール（やってはいけないこと）
 
 - `input/` の元ファイルを書き換えない
-- `/context` の実行中は、`input/` と `context/` 以外のファイルを書き換えない（ルールや手順書を変えるのは、人が頼んだときだけ）
+- `/matome` の実行中は、`input/` と `context/` 以外のファイルを書き換えない（ルールや手順書を変えるのは、人が頼んだときだけ）
 - メール送信・外部サービスへの投稿など、外に送る操作はしない
 - 資料にない数字・意見を推測で作らない。わからないことは「【要確認】」と書く
 - まとめには個人名・電話番号・メールアドレスを残さない（Aさん・Bさんに置きかえる）
@@ -459,10 +459,10 @@ footer .wrap { padding-block: 20px; font-size: 13px; color: var(--muted); displa
         </tbody>
       </table>
     </div>
-    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け</span><button class="copy" type="button">コピー</button></div><pre>context.md の内容を、そのまま .claude/commands/context.md としてコピーしてください。中身は変えないでください。</pre></div>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け</span><button class="copy" type="button">コピー</button></div><pre>matome.md の内容を、そのまま .claude/commands/matome.md としてコピーしてください。中身は変えないでください。</pre></div>
     <details>
-      <summary>手順書（context.md）の中身を見る</summary>
-      <div class="inner"><div class="prompt"><div class="prompt-bar"><span>context.md</span><button class="copy" type="button">コピー</button></div><pre>---
+      <summary>手順書（matome.md）の中身を見る</summary>
+      <div class="inner"><div class="prompt"><div class="prompt-bar"><span>matome.md</span><button class="copy" type="button">コピー</button></div><pre>---
 description: アンケートと議事録を読み、次に使えるコンテキスト資料にまとめて、人に確認してから保存する
 argument-hint: [まとめたい資料のパス（省略すると input フォルダの新しい2件）]
 ---
@@ -527,7 +527,8 @@ argument-hint: [まとめたい資料のパス（省略すると input フォル
     </details>
     <div class="note">
       <h4>確認しましょう</h4>
-      <p>入力欄に <code>/</code> と打つと、候補に <code>context</code> が出てきます。出てこないときは、<b>ターミナル版</b>は <code>/exit</code> で終了してもう一度 <code>claude</code>、<b>デスクトップ版</b>は新しいセッションを開き直してください。</p>
+      <p>入力欄に <code>/</code> と打つと、候補に <code>matome</code> が出てきます。（Claude Code には、使用量を表示する <code>/context</code> というコマンドが最初から入っています。名前が重ならないように、今日のコマンドは <code>/matome</code> にしています）</p>
+      <p>出てこないときは、<b>ターミナル版</b>は <code>/exit</code> で終了してもう一度 <code>claude</code>、<b>デスクトップ版</b>は新しいセッションを開き直してください。</p>
     </div>
   </div>
 </section>
@@ -540,7 +541,7 @@ argument-hint: [まとめたい資料のパス（省略すると input フォル
       <span class="time">15:15〜15:25</span>
       <label class="donebox"><input type="checkbox" id="done-stepC" data-done="stepC">できた</label>
     </div>
-    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>入力</span><button class="copy" type="button">コピー</button></div><pre>/context</pre></div>
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>入力</span><button class="copy" type="button">コピー</button></div><pre>/matome</pre></div>
     <p>動き出したら、次の5つを画面で確かめましょう。</p>
     <ul class="signs">
       <li><b>① 方針</b><span>まとめを書く前に、方針が3行で出てくる</span></li>
@@ -612,9 +613,9 @@ argument-hint: [まとめたい資料のパス（省略すると input フォル
     </details>
     <h3 style="font-size:18px">チェック項目を1つ足して育てる</h3>
     <p>使ってみて「ここも見てほしい」と思ったことを、手順書に1行足します。これがエージェントを<b>育てる</b>ということです。</p>
-    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け</span><button class="copy" type="button">コピー</button></div><pre>.claude/commands/context.md の「6. 自分でチェックする」に、次のチェック項目を追加してください。
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>貼り付け</span><button class="copy" type="button">コピー</button></div><pre>.claude/commands/matome.md の「6. 自分でチェックする」に、次のチェック項目を追加してください。
 - [ ] 回収率（回答数 ÷ 配布数）が書かれているか</pre></div>
-    <p>もう一度 <code>/context</code> を動かして、チェック結果が増えていることを確かめましょう。</p>
+    <p>もう一度 <code>/matome</code> を動かして、チェック結果が増えていることを確かめましょう。</p>
   </div>
 </section>
 
@@ -628,7 +629,7 @@ argument-hint: [まとめたい資料のパス（省略すると input フォル
     </div>
     <p>前半の紙のワークで ○ をつけた、自分の課題で作ってみましょう。遅れている方は、この時間でステップCまで進めれば大丈夫です。</p>
     <p>ワークシートを見ながら、<b>（　）の中だけ</b>書きかえて送ります。</p>
-    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>（　）を書きかえて貼り付け</span><button class="copy" type="button">コピー</button></div><pre>.claude/commands/context.md を参考にして、新しい手順書 .claude/commands/（コマンドの名前）.md を作ってください。
+    <div class="prompt"><div class="prompt-bar"><span><span class="where">Claude Code</span>（　）を書きかえて貼り付け</span><button class="copy" type="button">コピー</button></div><pre>.claude/commands/matome.md を参考にして、新しい手順書 .claude/commands/（コマンドの名前）.md を作ってください。
 
 ・何をするコマンドか：（例：経費メモから勘定科目の候補を出す）
 ・手順（紙に書いた順番）：（1. ○○を読む　2. ○○する　3. ○○する）
@@ -645,7 +646,7 @@ argument-hint: [まとめたい資料のパス（省略すると input フォル
   <h2>持ち帰り方と、公開しない約束</h2>
   <ul>
     <li>フォルダごと、いつも使う場所（ドキュメントなど）に移動します。</li>
-    <li>次に使うときは、そのフォルダで Claude Code を起動して <code>/context</code> と打つだけです。</li>
+    <li>次に使うときは、そのフォルダで Claude Code を起動して <code>/matome</code> と打つだけです。</li>
     <li>自分の GitHub に置くと、チームでも同じコマンドが使えます。ただし <code>input/</code> と <code>context/</code> は <code>.gitignore</code> で外したままにしてください。</li>
   </ul>
   <div class="warn">
@@ -669,12 +670,12 @@ argument-hint: [まとめたい資料のパス（省略すると input フォル
     <table>
       <thead><tr><th>こんなとき</th><th>こうする</th></tr></thead>
       <tbody>
-        <tr><td>/context が候補に出ない</td><td>ターミナル版は <code>/exit</code> → <code>claude</code> で起動し直す。デスクトップ版は新しいセッションを開く。<code>Minutes-main</code> フォルダで起動しているかも確認</td></tr>
+        <tr><td>/matome が候補に出ない</td><td>ターミナル版は <code>/exit</code> → <code>claude</code> で起動し直す。デスクトップ版は新しいセッションを開く。<code>Minutes-main</code> フォルダで起動しているかも確認</td></tr>
         <tr><td>確認せずに保存しようとした</td><td>許可を求められたら「いいえ」。止めたいときは <code>Esc</code> キー。そのあと「手順書の7番を必ず守って」と伝える</td></tr>
         <tr><td>数字が合わない・資料にないことが入っている</td><td>「件数をもう一度数え直してください」「資料にないことは入れないでください」と伝える</td></tr>
         <tr><td>エラーが出た</td><td>エラーの全文を貼り付けて「原因を1つに絞って修正してください」と頼む</td></tr>
         <tr><td>途中のステップで遅れた</td><td><code>完成版/</code> フォルダの中身をそれぞれの場所にコピーして追いつく（下のプロンプト）</td></tr>
-        <tr><td>デスクトップ版でスラッシュコマンドが使えない</td><td><code>context.md</code> の中身を貼り付けて「この手順で input フォルダの資料をまとめてください」と頼む</td></tr>
+        <tr><td>デスクトップ版でスラッシュコマンドが使えない</td><td><code>matome.md</code> の中身を貼り付けて「この手順で input フォルダの資料をまとめてください」と頼む</td></tr>
       </tbody>
     </table>
   </div>
@@ -688,8 +689,8 @@ argument-hint: [まとめたい資料のパス（省略すると input フォル
       <thead><tr><th>やりたいこと</th><th>操作</th></tr></thead>
       <tbody>
         <tr><td>Claude Code を起動</td><td>フォルダでターミナルを開いて <code>claude</code></td></tr>
-        <tr><td>まとめを作る</td><td><code>/context</code></td></tr>
-        <tr><td>資料を指定して作る</td><td><code>/context input/ファイル名</code></td></tr>
+        <tr><td>まとめを作る</td><td><code>/matome</code></td></tr>
+        <tr><td>資料を指定して作る</td><td><code>/matome input/ファイル名</code></td></tr>
         <tr><td>途中で止める</td><td><code>Esc</code> キー</td></tr>
         <tr><td>終了する</td><td><code>/exit</code></td></tr>
         <tr><td>まとめを使う</td><td>「context フォルダのまとめをもとに、〇〇を書いてください」</td></tr>
